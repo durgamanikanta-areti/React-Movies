@@ -26,11 +26,6 @@ export const moviesApiSlice = apiSlice.injectEndpoints({
       query: ({ id, rating, comment }) => ({
         url: `${MOVIE_URL}/${id}/reviews`,
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
         body: { rating, id, comment },
       }),
     }),
