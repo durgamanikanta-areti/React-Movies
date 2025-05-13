@@ -15,10 +15,6 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 // Configuration
 dotenv.config();
 connectDB();
-app.use(cors({
-  origin: "https://react-movies-frontend.onrender.com", // allow only frontend
-  credentials: true 
-}));
 
 const app = express();
 
@@ -26,6 +22,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({
+  origin: "https://react-movies-frontend.onrender.com", // allow only frontend
+  credentials: true 
+}));
 
 const PORT = process.env.PORT || 3000;
 
