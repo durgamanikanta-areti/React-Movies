@@ -3,6 +3,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import path from "path";
+import cors from "cors";
 
 // Files
 import connectDB from "./config/db.js";
@@ -14,6 +15,10 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 // Configuration
 dotenv.config();
 connectDB();
+app.use(cors({
+  origin: "https://react-movies-frontend.onrender.com", // allow only frontend
+  credentials: true 
+}));
 
 const app = express();
 
