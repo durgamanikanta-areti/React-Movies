@@ -15,7 +15,7 @@ const CreateMovie = () => {
     year: 0,
     detail: "",
     cast: [],
-    rating: 0,
+    // rating: 0,
     image: null,
     genre: "",
   });
@@ -108,7 +108,7 @@ const CreateMovie = () => {
           year: 0,
           detail: "",
           cast: [],
-          ratings: 0,
+          // ratings: 0,
           image: null,
           genre: "",
         });
@@ -187,7 +187,7 @@ const CreateMovie = () => {
                 <option>Loading genres...</option>
               ) : (
                 genres.map((genre) => (
-                  <option key={genre.id} value={genre.id}>
+                  <option key={genre._id} value={genre._id}>
                     {genre.name}
                   </option>
                 ))
