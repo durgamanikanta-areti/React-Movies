@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   useGetSpecificMovieQuery,
   useUpdateMovieMutation,
-  useUploadImageMutation,
   useDeleteMovieMutation,
 } from "../../redux/api/movies";
 import { toast } from "react-toastify";
@@ -14,29 +13,24 @@ const UpdateMovie = () => {
 
   const [movieData, setMovieData] = useState({
     name: "",
-    year: 0,
+    year: null,
     detail: "",
     cast: [],
-    ratings: 0,
+    // ratings: 0,
     image: null,
   });
 
-  const [selectedImage, setSelectedImage] = useState(null);
   const { data: initialMovieData } = useGetSpecificMovieQuery(id);
 
   useEffect(() => {
     if (initialMovieData) {
       setMovieData(initialMovieData);
     }
+    
   }, [initialMovieData]);
 
   const [updateMovie, { isLoading: isUpdatingMovie }] =
     useUpdateMovieMutation();
-
-  const [
-    uploadImage,
-    { isLoading: isUploadingImage, error: uploadImageErrorDetails },
-  ] = useUploadImageMutation();
 
   const [deleteMovie] = useDeleteMovieMutation();
 
@@ -48,49 +42,33 @@ const UpdateMovie = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedImage(file);
-  };
-
   const handleUpdateMovie = async () => {
     try {
       if (
         !movieData.name ||
         !movieData.year ||
         !movieData.detail ||
-        !movieData.cast
+        !movieData.cast ||
+        !movieData.image
       ) {
         toast.error("Please fill in all required fields");
         return;
       }
 
-      let uploadedImagePath = movieData.image;
-
-      if (selectedImage) {
-        const formData = new FormData();
-        formData.append("image", selectedImage);
-
-        const uploadImageResponse = await uploadImage(formData);
-
-        if (uploadImageResponse.data) {
-          uploadedImagePath = uploadImageResponse.data.image;
-        } else {
-          console.error("Failed to upload image:", uploadImageErrorDetails);
-          toast.error("Failed to upload image");
-          return;
-        }
+      if (
+        movieData.name ||
+        movieData.year ||
+        movieData.detail ||
+        movieData.cast ||
+        movieData.image
+      ) {
+        await updateMovie({
+          id: id,
+          updatedMovie: movieData,
+        });
+        
+        navigate("/admin/movies-list", { state: { refetch: true } });
       }
-
-      await updateMovie({
-        id: id,
-        updatedMovie: {
-          ...movieData,
-          image: uploadedImagePath,
-        },
-      });
-
-      navigate("/movies");
     } catch (error) {
       console.error("Failed to update movie:", error);
     }
@@ -163,27 +141,14 @@ const UpdateMovie = () => {
         </div>
 
         <div className="mb-4">
-          <label
-            style={
-              !selectedImage
-                ? {
-                    border: "1px solid #888",
-                    borderRadius: "5px",
-                    padding: "8px",
-                  }
-                : {
-                    border: "0",
-                    borderRadius: "0",
-                    padding: "0",
-                  }
-            }
-          >
-            {!selectedImage && "Upload Image"}
+          <label className="block">
+            Image URL:
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: !selectedImage ? "none" : "block" }}
+              type="text"
+              name="image"
+              value={movieData.image}
+              onChange={handleChange}
+              className="border px-2 py-1 w-full"
             />
           </label>
         </div>
@@ -192,18 +157,18 @@ const UpdateMovie = () => {
           type="button"
           onClick={handleUpdateMovie}
           className="bg-teal-500 text-white px-4 py-2 rounded"
-          disabled={isUpdatingMovie || isUploadingImage}
+          disabled={isUpdatingMovie}
         >
-          {isUpdatingMovie || isUploadingImage ? "Updating..." : "Update Movie"}
+          {isUpdatingMovie ? "Updating..." : "Update Movie"}
         </button>
 
         <button
           type="button"
           onClick={handleDeleteMovie}
           className="bg-red-500 text-white px-4 py-2 rounded ml-2"
-          disabled={isUpdatingMovie || isUploadingImage}
+          disabled={isUpdatingMovie}
         >
-          {isUpdatingMovie || isUploadingImage ? "Deleting..." : "Delete Movie"}
+          {isUpdatingMovie ? "Deleting..." : "Delete Movie"}
         </button>
       </form>
     </div>
